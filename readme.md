@@ -7,3 +7,5 @@
 后台技术栈：springboot + mybatis + 通用mapper + pageHelper
 
 前端：thymeleaf + layer + layui
+
+封装：spring全局异常，通用结果returnWrapper返回
