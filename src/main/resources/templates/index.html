@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!-- 载入文章头部页面，位置在/client文件夹下的header模板页面，模板名称th:fragment为header -->
+<div th:replace="/header::header(null,null)"/>
+<body>
+<div class="am-g am-g-fixed blog-fixed index-page">
+    <div class="info-text">
+        <button type="button" class="layui-btn layui-btn-danger" onclick="initProductAmount()">重新初始化秒杀商品数量</button>
+        <div class="layui-input-inline">
+            <input type="text" id="product_amount" class="layui-input" th:value="10">
+            <input type="hidden" id="current_count" class="layui-input" th:value="${current_count}">
+        </div>
+    </div>
+    <div class="layui-progress layui-progress-big layui-bg-orange" lay-showpercent="true">
+        <span style="margin-left: 10px">秒杀进度</span>
+        <div class="layui-progress-bar" lay-percent="${amount_percent}"></div>
+    </div>
+    <div align="center" style="margin-top: 30px">
+    </div>
+    <a style="display: block;margin: 0 auto;" class="info-logo">
+        <img style="display: block;margin: 0 auto;" th:src="@{/user/img/idstaa_product.png}"/>
+    </a>
+    <div align="center">
+        <a type="button" class="layui-btn layui-btn-danger" onclick="flash()">秒杀</a>
+    </div>
+</div>
+</div>
+</body>
+<!-- 载入文章尾部页面，位置在/client文件夹下的footer模板页面，模板名称th:fragment为footer -->
+<div th:replace="/footer::footer"/>
+<script type="text/javascript">
+    function initProductAmount() {
+        var amount = $("#product_amount").val();
+        if (amount == null || amount == undefined) {
+            amount = 10;
+        }
+        layer.confirm('初始化秒杀商品数量为：' + amount, function (index) {
+            $.ajax({
+                type: 'get',
+                url: '/initProductAmount/' + amount,
+                success: function (data) {
+                    if (data.code != 1) {
+                        layer.msg(data.message, {icon: 1, time: 1000});
+                    } else {
+                        layer.msg(data.message, {icon: 1, time: 3000});
+                        layer.close(index);
+                    }
+                },
+                error: function (data) {
+                    console.log(data.msg);
+                },
+            });
+        });
+    }
+
+    function flash() {
+        var current_count = $("#current_count").val();
+        layer.confirm('开始抢购啦,还有' + current_count + "件，手慢无", function (index) {
+            $.ajax({
+                type: 'get',
+                url: '/flash',
+                success: function (data) {
+                    var orderId = data.results.orderId;
+                    if (data.code != 1) {
+                        layer.msg(data.message, {icon: 1, time: 1000});
+                    } else {
+                        layer.msg(data.message, {icon: 1, time: 3000});
+                        window.location.href="/waitingPayView/"+orderId;
+                    }
+                },
+                error: function (data) {
+                    console.log(data.msg);
+                },
+            });
+        });
+    }
+</script>
+</html>
